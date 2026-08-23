@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exceptional Blogs</title>
+<meta name="description" content="Research-backed articles on AI security, careers, and technology, written for anyone who lands here.">
+<style>
+  :root{
+    --bg:#fbfaf7; --surface:#ffffff; --text:#1c1d22; --muted:#5b5f6b;
+    --accent:#1f4fd8; --accent-soft:#eef2ff; --border:#e6e4dd;
+    --card-shadow: 0 1px 3px rgba(20,20,30,.06), 0 8px 24px rgba(20,20,30,.04);
+    --maxw: 1080px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14151a; --surface:#1b1c22; --text:#eceef2; --muted:#a2a6b3;
+      --accent:#7c9bff; --accent-soft:#232a4a; --border:#2b2d36;
+      --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14151a; --surface:#1b1c22; --text:#eceef2; --muted:#a2a6b3;
+    --accent:#7c9bff; --accent-soft:#232a4a; --border:#2b2d36;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--text); margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    line-height:1.6;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+
+  /* header */
+  header.site{padding:40px 0 8px; border-bottom:1px solid var(--border); margin-bottom:8px;}
+  .brand-row{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:22px;}
+  .brand{font-size:24px; font-weight:800; letter-spacing:-0.02em; text-decoration:none; color:var(--text);}
+  .brand span{color:var(--accent);}
+  .tagline{color:var(--muted); font-size:15px;}
+
+  /* categories */
+  .cats{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:20px;}
+  .cat-pill{
+    border:1px solid var(--border); background:var(--surface); color:var(--muted);
+    padding:7px 14px; border-radius:999px; font-size:13.5px; font-weight:600;
+    cursor:pointer; transition:all .15s ease; user-select:none;
+  }
+  .cat-pill:hover{border-color:var(--accent); color:var(--accent);}
+  .cat-pill.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+
+  /* carousel */
+  section.featured{padding:28px 0 8px;}
+  h2.section-title{font-size:20px; margin:0 0 16px; letter-spacing:-0.01em;}
+  .carousel-row{position:relative;}
+  .carousel{
+    display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:4px 4px 16px; margin:0 -4px;
+    scrollbar-width:thin;
+  }
+  .carousel::-webkit-scrollbar{height:6px;}
+  .carousel::-webkit-scrollbar-thumb{background:var(--border); border-radius:6px;}
+  .carousel-card{
+    scroll-snap-align:start; flex:0 0 300px; background:var(--surface);
+    border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    box-shadow:var(--card-shadow); text-decoration:none; color:var(--text);
+    display:flex; flex-direction:column; transition:transform .15s ease;
+  }
+  .carousel-card:hover{transform:translateY(-3px);}
+  .carousel-card .thumb{width:100%; aspect-ratio:16/10; object-fit:cover; background:var(--accent-soft); display:block;}
+  .carousel-card .body{padding:16px 18px 18px;}
+  .card-cat{font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent);}
+  .card-title{font-size:16.5px; font-weight:700; margin:8px 0 6px; line-height:1.35;}
+  .card-excerpt{font-size:13.5px; color:var(--muted); margin:0 0 10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .card-meta{font-size:12px; color:var(--muted);}
+
+  .carousel-nav{display:flex; gap:8px; position:absolute; right:0; top:-52px;}
+  .carousel-nav button{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); cursor:pointer; font-size:16px;
+  }
+  .carousel-nav button:hover{border-color:var(--accent); color:var(--accent);}
+
+  /* all articles grid */
+  section.all{padding:36px 0 60px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px;}
+  .grid .carousel-card{flex:none;}
+  .empty-cat{color:var(--muted); font-size:14.5px; padding:20px 0;}
+
+  footer.site{border-top:1px solid var(--border); padding:24px 0 50px; color:var(--muted); font-size:13.5px;}
+
+  @media (max-width:640px){
+    .carousel-card{flex-basis:250px;}
+    .carousel-nav{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Exceptional<span>Blogs</span></a>
+      <span class="tagline">Research-backed articles on AI security, careers, and technology.</span>
+    </div>
+    <nav class="cats" id="cats">
+      <button class="cat-pill active" data-cat="all">All</button>
+      <button class="cat-pill" data-cat="ai-security">AI &amp; LLM Security</button>
+      <button class="cat-pill" data-cat="career">Career &amp; Job Market</button>
+      <button class="cat-pill" data-cat="tech">Tech Deep Dives</button>
+    </nav>
+  </header>
+
+  <section class="featured">
+    <h2 class="section-title">Recent articles</h2>
+    <div class="carousel-row">
+      <div class="carousel-nav">
+        <button id="prevBtn" aria-label="Previous">&#8249;</button>
+        <button id="nextBtn" aria-label="Next">&#8250;</button>
+      </div>
+      <div class="carousel" id="carousel"></div>
+    </div>
+  </section>
+
+  <section class="all">
+    <h2 class="section-title">All articles</h2>
+    <div class="grid" id="grid"></div>
+    <p class="empty-cat" id="emptyMsg" style="display:none;">No articles in this category yet.</p>
+  </section>
+
+  <footer class="site">
+    Exceptional Blogs. Articles are researched with delegated AI agents and independently source-checked before publishing.
+  </footer>
+
+</div>
+
+<script>
+  // Article manifest: add a new object here whenever a new article is published.
+  const ARTICLES = [
+    {
+      title: "Breaking In: The Crowded, Fast-Growing World of AI Red-Teaming",
+      excerpt: "Two of the field's best-known startups were acquired in the last twelve months. A researcher's map of who is already here, what the work pays, and where the open ground actually is.",
+      url: "2026-08-23-prompt-injection-competition-landscape.html",
+      image: "assets/prompt-injection-hero.png",
+      category: "ai-security",
+      categoryLabel: "AI & LLM Security",
+      date: "2026-08-23"
+    }
+  ];
+
+  function formatDate(iso){
+    const d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  function cardHTML(a){
+    return `<a class="carousel-card" href="${a.url}">
+      <img class="thumb" src="${a.image}" alt="" loading="lazy">
+      <div class="body">
+        <span class="card-cat">${a.categoryLabel}</span>
+        <div class="card-title">${a.title}</div>
+        <p class="card-excerpt">${a.excerpt}</p>
+        <span class="card-meta">${formatDate(a.date)}</span>
+      </div>
+    </a>`;
+  }
+
+  function render(filter){
+    const sorted = [...ARTICLES].sort((a,b) => b.date.localeCompare(a.date));
+    const filtered = filter === "all" ? sorted : sorted.filter(a => a.category === filter);
+
+    document.getElementById("carousel").innerHTML = sorted.map(cardHTML).join("");
+    const grid = document.getElementById("grid");
+    grid.innerHTML = filtered.map(cardHTML).join("");
+    document.getElementById("emptyMsg").style.display = filtered.length ? "none" : "block";
+  }
+
+  document.getElementById("cats").addEventListener("click", (e) => {
+    const btn = e.target.closest(".cat-pill");
+    if (!btn) return;
+    document.querySelectorAll(".cat-pill").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    render(btn.dataset.cat);
+  });
+
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    document.getElementById("carousel").scrollBy({ left: -320, behavior: "smooth" });
+  });
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    document.getElementById("carousel").scrollBy({ left: 320, behavior: "smooth" });
+  });
+
+  render("all");
+</script>
+</body>
+</html>
