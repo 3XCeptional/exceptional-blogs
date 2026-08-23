@@ -27,7 +27,7 @@ export default function Home() {
     <div className="wrap wide">
       <header className="site-header">
         <div className="brand-row">
-          <Link className="brand" to="/">
+          <Link className="brand" to="/" viewTransition>
             Exceptional<span>Blogs</span>
           </Link>
           <span className="tagline">
@@ -59,8 +59,8 @@ export default function Home() {
             </button>
           </div>
           <div className="carousel" ref={carouselRef}>
-            {articles.map((a) => (
-              <ArticleCard key={a.slug} article={a} />
+            {articles.map((a, i) => (
+              <ArticleCard key={a.slug} article={a} index={i} />
             ))}
           </div>
         </div>
@@ -70,8 +70,8 @@ export default function Home() {
         <h2 className="section-title">All articles</h2>
         {filtered.length > 0 ? (
           <div className="grid">
-            {filtered.map((a) => (
-              <ArticleCard key={a.slug} article={a} />
+            {filtered.map((a, i) => (
+              <ArticleCard key={a.slug} article={a} index={i} />
             ))}
           </div>
         ) : (
@@ -81,7 +81,15 @@ export default function Home() {
 
       <footer className="site">
         Exceptional Blogs. Articles are researched with delegated AI agents and independently
-        source-checked before publishing.
+        source-checked before publishing. &middot;{" "}
+        <a
+          className="support-link"
+          href="https://www.buymeacoffee.com/3xceptional"
+          target="_blank"
+          rel="noopener"
+        >
+          Support this project
+        </a>
       </footer>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { ArticleMeta } from "../content";
 
-export function ArticleCard({ article }: { article: ArticleMeta }) {
+export function ArticleCard({ article, index = 0 }: { article: ArticleMeta; index?: number }) {
   const displayDate = new Date(`${article.date}T00:00:00`).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -9,7 +9,12 @@ export function ArticleCard({ article }: { article: ArticleMeta }) {
   });
 
   return (
-    <Link className="carousel-card" to={article.path}>
+    <Link
+      className="carousel-card reveal"
+      to={article.path}
+      viewTransition
+      style={{ animationDelay: `${index * 50}ms` }}
+    >
       <img
         className="thumb"
         src={`${import.meta.env.BASE_URL}${article.image}`}

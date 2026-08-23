@@ -22,10 +22,11 @@ export default function ArticleLayout({
   return (
     <div className="wrap">
       <p style={{ paddingTop: 24 }}>
-        <Link to="/">&larr; Exceptional Blogs</Link>
+        <Link to="/" viewTransition>
+          &larr; Exceptional Blogs
+        </Link>
       </p>
       <header className="hero">
-        <span className="kicker">{frontmatter.kicker}</span>
         <h1>{frontmatter.title}</h1>
         <p className="dek">{frontmatter.dek}</p>
         <p className="meta">
@@ -44,6 +45,17 @@ export default function ArticleLayout({
       </figure>
 
       <div className="article-body">{children}</div>
+
+      <footer className="site">
+        <a
+          className="support-link"
+          href="https://www.buymeacoffee.com/3xceptional"
+          target="_blank"
+          rel="noopener"
+        >
+          Support this project
+        </a>
+      </footer>
     </div>
   );
 }
