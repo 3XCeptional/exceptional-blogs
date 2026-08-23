@@ -31,5 +31,7 @@ export function Sources({ items }: { items: Source[] }) {
 }
 
 export function Disclaimer({ children }: { children: ReactNode }) {
-  return <p className="disclaimer">{children}</p>;
+  // A <div>, not <p>: MDX already wraps block text content in its own
+  // <p>, so a <p> wrapper here produced invalid nested <p><p>...</p></p>.
+  return <div className="disclaimer">{children}</div>;
 }
