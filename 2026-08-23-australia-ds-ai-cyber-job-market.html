@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Australia's Tech Job Market in the AI Era: Where the Real Opportunities and Gaps Are</title>
+<meta name="description" content="Job ads are falling, an official shortage list just eased for the first time since 2021, and AI Engineer still tops the fastest-growing roles list. A researcher's map of where growth is concentrated, what data science and cyber security roles actually pay, and which Australian employers are hiring for these skills under titles nobody searches for.">
+<style>
+  :root{
+    --bg:#fbfaf7; --surface:#ffffff; --text:#1c1d22; --muted:#5b5f6b;
+    --accent:#1f4fd8; --accent-soft:#eef2ff; --border:#e6e4dd;
+    --code-bg:#f3f1ea; --card-shadow: 0 1px 3px rgba(20,20,30,.06), 0 8px 24px rgba(20,20,30,.04);
+    --maxw: 780px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14151a; --surface:#1b1c22; --text:#eceef2; --muted:#a2a6b3;
+      --accent:#7c9bff; --accent-soft:#232a4a; --border:#2b2d36;
+      --code-bg:#20222b; --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14151a; --surface:#1b1c22; --text:#eceef2; --muted:#a2a6b3;
+    --accent:#7c9bff; --accent-soft:#232a4a; --border:#2b2d36;
+    --code-bg:#20222b; --card-shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--text); margin:0; padding:0 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    line-height:1.65;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto;}
+  header.hero{padding:56px 0 8px;}
+  .kicker{
+    font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent);
+  }
+  h1{font-size:clamp(28px,5vw,42px); line-height:1.15; margin:10px 0 14px; letter-spacing:-0.01em;}
+  .dek{font-size:19px; color:var(--muted); margin:0 0 28px; max-width:64ch;}
+  .meta{font-size:14px; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:12px 0; margin-bottom:32px;}
+  figure{margin:32px 0;}
+  figure img{width:100%; height:auto; border-radius:14px; box-shadow:var(--card-shadow); display:block;}
+  figcaption{font-size:13px; color:var(--muted); margin-top:10px; text-align:center;}
+  h2{font-size:26px; margin:48px 0 14px; letter-spacing:-0.01em;}
+  h2 .num{color:var(--accent); margin-right:8px;}
+  h3{font-size:19px; margin:28px 0 10px;}
+  p{margin:0 0 16px; font-size:17px;}
+  ul, ol{margin:0 0 16px; padding-left:22px;}
+  li{margin-bottom:8px; font-size:17px;}
+  strong{font-weight:650;}
+  a{color:var(--accent); text-decoration:underline; text-decoration-color:color-mix(in srgb, var(--accent) 40%, transparent);}
+  .callout{
+    background:var(--accent-soft); border-radius:14px; padding:20px 22px; margin:28px 0;
+    font-size:16px;
+  }
+  .callout .label{font-weight:700; display:block; margin-bottom:6px; color:var(--accent);}
+  .card-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:24px 0;}
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; box-shadow:var(--card-shadow);}
+  .card .figure-num{font-size:26px; font-weight:750; color:var(--accent); display:block;}
+  .card .figure-label{font-size:14px; color:var(--muted);}
+  table{width:100%; border-collapse:collapse; margin:20px 0; font-size:15px;}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border);}
+  th{color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.03em;}
+  code{background:var(--code-bg); padding:2px 6px; border-radius:5px; font-size:.9em;}
+  .warn{
+    border-left:4px solid #d8531f; background:color-mix(in srgb, #d8531f 8%, var(--surface));
+    padding:16px 18px; border-radius:0 10px 10px 0; margin:24px 0; font-size:16px;
+  }
+  .warn .label{font-weight:700; color:#d8531f; display:block; margin-bottom:4px;}
+  footer.sources{
+    margin-top:64px; padding-top:24px; border-top:1px solid var(--border);
+  }
+  footer.sources h2{margin-top:0;}
+  footer.sources ol{font-size:14.5px; color:var(--muted);}
+  footer.sources li{margin-bottom:10px;}
+  footer.sources a{color:var(--text);}
+  .disclaimer{font-size:13px; color:var(--muted); margin-top:40px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="kicker">Career Research · Data Science, AI &amp; Cyber Security</span>
+    <h1>Australia's Tech Job Market in the AI Era: Where the Real Opportunities and Gaps Are</h1>
+    <p class="dek">SEEK job ads have fallen for eleven straight months. LinkedIn still ranks AI Engineer the fastest-growing role in the country. Jobs and Skills Australia's own shortage list just recorded its first sustained decline since it started tracking in 2021. All three of these things are true at the same time, and none of them tell the full story on its own. This is a map of where growth in data science, AI and cyber security careers is actually concentrated in Australia through 2031, what the roles pay with real ranges rather than one flattering number, and which employers are hiring for these exact skills under job titles nobody thinks to search for.</p>
+    <p class="meta">Published 2026-08-23 · Research compiled with delegated AI agents and independent source verification · 14 min read</p>
+  </header>
+
+  <figure>
+    <img src="assets/australia-job-market-hero.png" alt="Illustration representing Australia's technology job market in the AI era" loading="lazy">
+    <figcaption>A stylised map of Australia overlaid with technology and security iconography, representing the uneven distribution of AI and cyber security demand across the country's job market. Illustration generated for this article.</figcaption>
+  </figure>
+
+  <p>Two headlines about the same labour market can both be accurate and still point in opposite directions. In June 2026, job ad volume on SEEK fell 5.8 percent year over year, the steepest decline recorded since early 2025 and an eleventh consecutive month of contraction. In the same stretch, LinkedIn's "Jobs on the Rise" report named AI Engineer the single fastest-growing role in the country, and Indeed's Hiring Lab found that AI mentions in Australian job postings nearly doubled in twelve months. The market is not uniformly hot or uniformly cold. It is bifurcating, hard, between a shrinking pool of generalist and junior openings and a genuinely under-supplied layer of mid-to-senior AI, data and cyber security specialists. This piece works through what that split means for anyone building a career in these fields between now and 2031: where the growth is real, what it pays, where the less obvious roles are hiding, and how to actually get in.</p>
+
+  <h2><span class="num">01</span>The headline numbers, and why they do not all agree</h2>
+
+  <p>Start with the official classification system, because it changed underneath this market. The Australian Bureau of Statistics gave Data Scientist its own dedicated occupation code, 223234, under the new OSCA 2024 classification, sitting inside the broader Data Professionals unit group. That sounds bureaucratic, but it matters: before this, "data scientist" had no clean official box, which made it harder to track pay, headcount and growth with any rigor. Cyber security has a cleaner history. Jobs and Skills Australia's occupation and industry profile for ICT Security Specialists projects employment in that group growing 14.2 percent from May 2024 to 2029, more than double the 6.6 percent national average across all occupations.</p>
+
+  <p>Layered on top of that is the Tech Council of Australia's AI workforce modelling, produced with Microsoft, LinkedIn and Workday. It projects Australia's AI specialist workforce growing from roughly 40,000 people in 2024 to about 85,000 by 2027, against projected demand of around 140,000 over the same window: a shortfall of up to 60,000 specialists, concentrated specifically in mid and senior production-grade roles rather than entry-level ones. The same body of research puts a broader figure on the table, up to 200,000 AI-related jobs created in Australia by 2030, inside a wider claim that the whole Australian tech workforce needs to reach about 1.3 million people by 2030, roughly 312,000 more than current supply trends deliver.</p>
+
+  <div class="card-grid">
+    <div class="card"><span class="figure-num">60K</span><span class="figure-label">Projected AI specialist shortfall by 2027 against Tech Council of Australia demand modelling, concentrated in mid and senior roles</span></div>
+    <div class="card"><span class="figure-num">14.2%</span><span class="figure-label">Projected employment growth for ICT Security Specialists to 2029, more than double the 6.6% national average</span></div>
+    <div class="card"><span class="figure-num">5.8%</span><span class="figure-label">Year-over-year fall in SEEK job ad volume in June 2026, the steepest in over a year and an eleventh straight month of decline</span></div>
+    <div class="card"><span class="figure-num">29%</span><span class="figure-label">Share of occupations nationally still in shortage per the 2025 Occupation Shortage List, down from 36% in 2023</span></div>
+  </div>
+
+  <p>Demand-side hiring signals point the same direction as the workforce modelling. Indeed's Hiring Lab found that AI mentions in Australian job postings rose from 3.3 percent in February 2025 to 6.2 percent in February 2026, and that in software development and data and analytics specifically, 43 percent of postings now mention AI. LinkedIn's 2026 "Jobs on the Rise Australia" report, based on hiring and posting data from 2023 through mid-2025, ranks AI Engineer the fastest-growing role nationally, ahead of every other occupation tracked.</p>
+
+  <p>None of that cancels out the SEEK contraction. Overall ad volume has been falling for close to a year, and graduate-level hiring has been the softest part of that: Indeed's Hiring Lab reporting on graduate outcomes through 2025 and into 2026 shows the share of graduate postings in high-AI-exposure occupations easing back from prior-year peaks, alongside a broader pullback in entry-level hiring that most recruiters in the sector describe anecdotally as a sharper contraction than the aggregate graduate figures show on their own. Read together, the honest picture is a market where total advertised volume is shrinking, but the AI- and cyber-adjacent slice of that shrinking pie is one of the only parts still growing, and it is growing fastest at levels above entry.</p>
+
+  <div class="callout">
+    <span class="label">A softening signal worth taking seriously</span>
+    Jobs and Skills Australia's 2025 Occupation Shortage List found 293 of 1,022 assessed occupations, about 29 percent, in national shortage. That is down from 36 percent in the 2023 list, the first sustained decline since the agency started tracking in 2021, driven by more qualified applicants, higher vacancy fill rates and softer demand in several sectors. This cuts directly against any narrative that says "everything in tech is desperately short-staffed." The real picture is narrower: shortage is concentrated at mid, senior and specialist levels, especially in cloud security, OT and industrial control system security, detection engineering and applied AI, while junior generalist supply now looks comparatively well met.
+  </div>
+
+  <h2><span class="num">02</span>Where the growth is concentrated: cyber security's automation problem</h2>
+
+  <p>Inside cyber security, the growth story is not evenly spread across the discipline, and Tier-1 Security Operations Centre work is the clearest casualty. Multiple security vendors, echoed by Gartner's own published commentary on AI SOC agents, now describe automated triage tools resolving or escalating more than 90 percent of Tier-1 alerts by 2026, covering initial enrichment, categorisation and even some containment actions without a human analyst in the loop. Gartner's own longer-range projection is that AI will automate 50 percent of Level 1 SOC responsibilities by 2028. Vendor blogs are, unsurprisingly, the loudest voices making these claims, so treat the specific percentages as directionally credible rather than precisely measured. The direction itself, however, is consistent across every vendor and analyst source found for this piece: the classic entry rung into cyber security, junior Tier-1 alert triage, is disappearing fastest of any role in the field.</p>
+
+  <div class="warn">
+    <span class="label">If you are trying to break into cyber security specifically</span>
+    Do not aim for a classic Tier-1 SOC analyst seat as your entry point. Every vendor and analyst source reviewed for this piece points the same direction: that rung of the ladder is the one AI is automating first and fastest. Detection engineering, threat intelligence, and cloud security are the entry paths that are actually holding up, because they require judgment and context that current automation does not replicate.
+  </div>
+
+  <p>The often-cited cyber security workforce shortfall numbers for Australia are genuinely unreliable as a single figure. Different sources circulate estimates ranging from roughly 2,300 to 30,000 unfilled roles, depending on vintage and methodology, and most of them trace back through several rounds of citation to the same aging AustCyber-lineage estimate. None of that should be quoted as an authoritative headline number. A more credible, more current demand signal comes from workforce surveys: 54 percent of Australian cyber security teams report being understaffed, and 58 percent report unfilled positions, according to industry survey data reported through the Australian Cyber Security Magazine. That is a far more defensible way to describe the shortage than any single national head-count figure.</p>
+
+  <h2><span class="num">03</span>What it actually pays</h2>
+
+  <p>Australian Bureau of Statistics data on employee earnings puts ICT Professionals among the highest-earning occupation groups nationally, with median weekly earnings around $2,300 as of August 2025, roughly $120,000 annualised. Robert Half's 2026 Australia Technology and IT Salary Guide adds an important counter-note to the hype: salary growth for cyber security and data engineering specifically has flattened compared to the sharp increases seen in prior years, even as demand for the skills stays steady. Growth is real, but the era of double-digit annual pay jumps in these roles looks to be over for now.</p>
+
+  <table>
+    <tr><th>Role</th><th>Typical range (AUD)</th></tr>
+    <tr><td>Data Scientist</td><td>$115,000 to $135,000 median; senior ML/AI-focused up to $180,000 to $215,000</td></tr>
+    <tr><td>Cyber Security Analyst</td><td>$100,000 to $120,000 median; entry level $70,000 to $95,000</td></tr>
+    <tr><td>Machine Learning Engineer</td><td>$105,000 to $176,000 typical; up to $200,000+ at senior level</td></tr>
+    <tr><td>Cyber Security Specialist, Sydney</td><td>$147,000 (25th percentile) to $196,000 (75th percentile)</td></tr>
+    <tr><td>CTO, Melbourne</td><td>Up to $370,000; roughly $275,000 typical nationally</td></tr>
+    <tr><td>CIO, Sydney/Melbourne/Canberra</td><td>Up to $375,000</td></tr>
+  </table>
+
+  <p>Government and clearance-driven roles run their own separate track. Reported figures put average government cyber security pay around $119,694 against a private-sector mid-level average closer to $155,000 and private-sector CISO packages reaching $325,000 to $350,000, though these particular aggregated figures come from a single source and were not independently cross-verified, so treat them as plausible rather than confirmed. What is better documented is the Canberra clearance premium: Defence and government roles in Canberra requiring NV1 or NV2 security clearance are widely reported by recruiters to carry a meaningful premium over equivalent Sydney or Melbourne roles, reflecting genuine scarcity of cleared candidates, though a precise dollar figure for that premium could not be independently confirmed for this piece and should be treated as directional. One number that is concrete and easy to underweight: federal Australian Public Service employment carries a 15.4 percent employer superannuation contribution, well above the 12 percent national standard, and that gap is routinely left out of public-versus-private pay comparisons even though it is worth tens of thousands of dollars over a career.</p>
+
+  <p>On international comparisons, the research behind this piece could not find a reliable, precisely sourced figure for how much more US-based remote roles pay relative to Australian domestic equivalents. The direction is real and worth naming: strong Australia-based machine learning engineers are increasingly fielding remote offers from US employers, and that is starting to put upward pressure on local senior AI compensation. But any specific percentage premium circulating for this should be treated as unverified rather than quoted as fact.</p>
+
+  <p>On visa-linked pay, there is no study isolating a data science, AI or cyber-specific wage gap for visa holders in Australia. What exists is a landmark 2026 survey led by the Migrant Justice Institute at UNSW Law and Justice and UTS Law, drawing on 9,963 responses from international students, sponsored workers, graduates and other temporary visa holders, which found two-thirds of respondents were paid less than they were legally owed. That finding is real and serious, but it is economy-wide and skewed toward lower-wage sectors, not ICT-specific. A more targeted, informed inference for this field specifically: the 482 skilled visa program carries a statutory wage floor, the Temporary Skilled Migration Income Threshold and the Annual Market Salary Rate, that most other visa categories lack. Sponsored ICT professional roles are therefore structurally lower-risk than the aggregate migrant underpayment statistic suggests, though this is an inference from the visa's design rather than a confirmed finding specific to this occupation group.</p>
+
+  <h2><span class="num">04</span>Hidden roles: the same skills, different job titles</h2>
+
+  <p>Some of the strongest, most stable demand for AI and cyber security skills in Australia sits under job titles that a standard search would never surface.</p>
+
+  <p><strong>CSIRO's Data61</strong> runs ongoing Research Scientist and Research Engineer hiring specifically across AI and cyber security, with roles based in Sydney, Melbourne, Brisbane, Canberra or fully remote, and a PhD scholarship program that feeds directly into that pipeline. It is one of the largest data-driven research organisations of its kind, with more than a thousand data scientists and hundreds of PhD students across dozens of partner universities.</p>
+
+  <p><strong>Mining majors</strong> represent a category that almost never shows up under a generic "cyber security analyst" search. Rio Tinto and BHP have documented histories of running dedicated hiring drives for industrial control system and operational technology security, driven by IT-OT convergence at mine sites, spanning roles in cyber incident response, forensics, and principal security architecture. These specific historical hiring drives are not necessarily still open today, so treat this as evidence of a real, recurring category of demand at these employers rather than a live listing, and check current openings directly on each company's careers page.</p>
+
+  <p><strong>CBA and Westpac</strong> both run dedicated technology graduate streams for cyber security specifically, separate from their generic technology graduate intakes, alongside newer data, digital and AI-focused graduate programs for 2026 and 2027 starts.</p>
+
+  <p><strong>Healthtech</strong> is a genuinely compliance-driven hiring trigger right now. A commercial market-research estimate puts Australia's digital health market at roughly $8.9 billion in 2025, forecast to reach $31.1 billion by 2034; treat that as a vendor projection rather than a settled figure. What is dated and confirmed is the My Health Records Rules 2026, now in force, which require every registered healthcare provider organisation to hold and maintain a written security and access policy covering staff training, user account management and data breach response, with existing registrants required to update their policy by 1 October 2026. That is a direct, dated compliance obligation that creates real hiring demand for people who can write and operationalise those policies, not just build product.</p>
+
+  <p><strong>RegTech and AI-funded fintech</strong> is another underexplored lane. Australia has 191 identified RegTech startups, and AI overtook fintech in 2025 as the single most-funded startup sector nationally, with roughly $5.48 billion raised across 390 deals, up 31 percent year over year (a slightly lower total figure, around $5.1 billion, is cited by at least one other outlet covering the same underlying data, so treat the precise total as approximate rather than exact). Perth-based WeMoney is a concrete example: it raised a $12 million Series A in April 2025 with Mastercard joining as a new investor, earmarked toward research and development of AI-driven features and expansion of its AI engineering team.</p>
+
+  <p><strong>TikTok's Sydney office</strong> runs Trust and Safety-titled Machine Learning Engineer roles that functionally overlap heavily with adversarial machine learning and abuse-detection work, filed under a completely different title than "AI security," which means these listings are easy to miss if that is specifically what a candidate is searching for.</p>
+
+  <p>Two government pathways round this out, with an important eligibility caveat attached to both. The <strong>Australian Signals Directorate</strong> runs a graduate program with Analyst, Cyber, Technologist, and Data Science and Analytics streams, starting on a salary around $83,489 including a 4 percent service allowance, plus 15.4 percent superannuation. It requires Australian citizenship, as do most Defence-prime cyber roles at companies like Leidos, Northrop Grumman and Lockheed Martin Australia, since those roles generally require a security clearance that in turn generally requires citizenship, with only narrow exceptions. The <strong>NSW Government</strong> runs its own Digital Government Graduate Program covering cyber security, data analytics and software development, sitting alongside the state's newly published 2026-2028 Cyber Security Strategy, which is open to a broader pool of applicants including eligible visa holders depending on the specific intake.</p>
+
+  <h2><span class="num">05</span>Practical, Australia-specific tips for breaking in</h2>
+
+  <ul>
+    <li><strong>Conferences are a real, cheap way to build a network in this field.</strong> BSides Sydney 2026 runs Saturday 7 November 2026 at TAFE Meadowbank. AISA's CyberConnect Canberra runs 27 to 28 May 2026, and AISA's flagship national conference, CyberCon Melbourne, runs 14 to 16 October 2026. AISA membership, at around 14,000 members nationally, can save well over $1,000 on CyberCon registration alone, which makes it worth joining before attending rather than after.</li>
+    <li><strong>Winning the internship is the real bottleneck, not converting it.</strong> The global benchmark for internship-to-full-time conversion sits around 45 to 63 percent. Atlassian specifically is reported to convert 75 to 85 percent of successful interns into return offers, despite an internship acceptance rate of only 1 to 5 percent. The competitive filter is getting the internship seat in the first place, not what happens after.</li>
+    <li><strong>Be careful with AI-written cover letters.</strong> A 2026 TopResume survey of hiring managers found that one in five would reject a candidate outright over an obviously AI-generated resume or cover letter, and a further one in five treat heavy reliance on AI as a red flag. Just over half consider AI-assisted proofreading or drafting acceptable, provided the finished product still sounds like a real person who put in genuine effort. This survey was conducted among US hiring managers rather than an Australian-specific sample, but the underlying lesson, that generic AI output reads badly while AI-assisted, specifically customised output does not, is portable.</li>
+    <li><strong>Time graduate applications around each employer's actual calendar.</strong> Large banks and established employers tend to open graduate applications around March to April, while product companies tend to open later, often around July to August. Applying to a program after its intended window has effectively closed is a common and avoidable mistake.</li>
+  </ul>
+
+  <p>Put together, the honest read on this market through 2031 is not "everything in tech is booming" or "the market has collapsed." It is narrower and more useful than either: overall advertised job volume is shrinking, the easy on-ramps into junior generalist and Tier-1 security roles are shrinking faster still, and the real growth is concentrated in specific, identifiable places, mid-to-senior AI production roles, cloud and OT security, detection engineering, and compliance-driven hiring in regulated sectors like health and finance. None of that is hidden. It is simply distributed across job titles, employers and pay bands that a generic search does not surface on its own.</p>
+
+  <footer class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>Jobs and Skills Australia, ICT Security Specialists occupation and industry profile: <a href="https://www.jobsandskills.gov.au/data/occupation-and-industry-profiles/occupations/262112-ict-security-specialists" target="_blank" rel="noopener">jobsandskills.gov.au</a></li>
+      <li>Australian Bureau of Statistics, OSCA 2024, Occupation 223234 Data Scientist: <a href="https://www.abs.gov.au/statistics/classifications/osca-occupation-standard-classification-australia/2024-version-1-0/browse-classification/2/22/223/2232/223234" target="_blank" rel="noopener">abs.gov.au</a></li>
+      <li>Tech Council of Australia, "AI to create 200,000 jobs in Australia by 2030": <a href="https://techcouncil.com.au/newsroom/ai-to-create-200000-jobs-in-australia-by-2030/" target="_blank" rel="noopener">techcouncil.com.au</a>; additional coverage via <a href="https://www.smartcompany.com.au/artificial-intelligence/tech-council-australia-ai-job-report-skill-shortage/" target="_blank" rel="noopener">SmartCompany</a></li>
+      <li>LinkedIn, "Jobs on the Rise Australia 2026," via <a href="https://www.hrleader.com.au/business/27698-ai-engineer-tops-linkedin-s-2026-jobs-on-the-rise-list" target="_blank" rel="noopener">HR Leader</a> and <a href="https://ia.acs.org.au/article/2026/ai-jobs-are-the-fastest-growing-in-australia.html" target="_blank" rel="noopener">ACS Information Age</a></li>
+      <li>Indeed Hiring Lab Australia, "Nothing Artificial About Australian AI Adoption": <a href="https://www.hiringlab.org/au/blog/2026/04/01/nothing-artificial-about-australian-ai-adoption/" target="_blank" rel="noopener">hiringlab.org/au</a></li>
+      <li>Indeed Hiring Lab Australia, "Nice Try, AI: Australian Graduates Are Still Getting Hired": <a href="https://www.hiringlab.org/au/blog/2026/04/22/nice-try-ai-australian-graduates-are-still-getting-hired/" target="_blank" rel="noopener">hiringlab.org/au</a></li>
+      <li>Staffing Industry Analysts, "Australia's job ads in June record steepest decline since early 2025": <a href="https://www.staffingindustry.com/news/global-daily-news/australias-job-ads-in-june-record-steepest-decline-since-early-2025" target="_blank" rel="noopener">staffingindustry.com</a></li>
+      <li>Jobs and Skills Australia, "Shortages ease but gaps persist in 2025 Occupation Shortage List": <a href="https://www.jobsandskills.gov.au/news/shortages-ease-gaps-persist-2025-occupation-shortage-list" target="_blank" rel="noopener">jobsandskills.gov.au</a></li>
+      <li>Swimlane, "5 Security Predictions That Will Redefine Your SOC in 2026": <a href="https://swimlane.com/blog/predictions-that-will-redefine-your-soc/" target="_blank" rel="noopener">swimlane.com</a></li>
+      <li>Dropzone AI, landing page summarising Gartner Innovation Insight: AI SOC Agents (50% of Level 1 responsibilities automated by 2028): <a href="https://www.dropzone.ai/lp/gartner-r-innovation-insight-ai-soc-agents" target="_blank" rel="noopener">dropzone.ai</a></li>
+      <li>Australian Cyber Security Magazine, citing ISACA's 2025 State of Cybersecurity Report (54% understaffed, 58% unfilled positions): <a href="https://australiancybersecuritymagazine.com.au/fewer-australian-enterprises-are-training-staff-for-security-roles-despite-understaffed-teams/" target="_blank" rel="noopener">australiancybersecuritymagazine.com.au</a></li>
+      <li>AISA, Australian Cyber Security Skills Shortage research report (background on shortfall estimate variance): <a href="https://www.aisa.org.au/common/Uploaded%20files/Research/AISA-CSSSrpt.pdf" target="_blank" rel="noopener">aisa.org.au</a></li>
+      <li>SEEK, Data Scientist salary career advice: <a href="https://au.seek.com/career-advice/role/data-scientist/salary" target="_blank" rel="noopener">au.seek.com</a></li>
+      <li>SEEK, Cyber Security Analyst salary career advice: <a href="https://au.seek.com/career-advice/role/cyber-security-analyst/salary" target="_blank" rel="noopener">au.seek.com</a></li>
+      <li>Bluebird Talent, Machine Learning Engineer salary in Australia 2026 hiring budget guide: <a href="https://bluebirdtalent.com.au/post/machine-learning-engineer-salary-australia" target="_blank" rel="noopener">bluebirdtalent.com.au</a></li>
+      <li>Robert Half, 2026 Australia Technology &amp; IT Salary Guide: <a href="https://www.roberthalf.com/au/en/insights/salary-guide/technology" target="_blank" rel="noopener">roberthalf.com</a>; Cyber-Security Specialist salary, Sydney: <a href="https://www.roberthalf.com/au/en/job-details/cyber-security-specialist/sydney" target="_blank" rel="noopener">roberthalf.com</a></li>
+      <li>Hays, FY25/26 Salary Guide Australia: <a href="https://www.hays.com.au/salary-guide" target="_blank" rel="noopener">hays.com.au</a></li>
+      <li>Australian Bureau of Statistics, Employee Earnings, August 2025: <a href="https://www.abs.gov.au/statistics/labour/earnings-and-working-conditions/employee-earnings/latest-release" target="_blank" rel="noopener">abs.gov.au</a></li>
+      <li>Australian Public Service Commission, Total Remuneration Package, on the PSSap 15.4% employer superannuation contribution rate: <a href="https://www.apsc.gov.au/remuneration-reports/australian-public-service-remuneration-report-2020/chapter-4-total-remuneration-package" target="_blank" rel="noopener">apsc.gov.au</a></li>
+      <li>UNSW Newsroom, "Landmark survey exposes a hidden system of migrant worker exploitation across Australia," Migrant Justice Institute report "Off the Books": <a href="https://www.unsw.edu.au/newsroom/news/2026/05/survey-hidden-system-migrant-worker-exploitation" target="_blank" rel="noopener">unsw.edu.au</a></li>
+      <li>CSIRO careers, covering Data61 research roles: <a href="https://www.csiro.au/en/careers" target="_blank" rel="noopener">csiro.au/en/careers</a>; CSIRO postgraduate and scholarship programs: <a href="https://www.csiro.au/en/careers/scholarships-student-opportunities" target="_blank" rel="noopener">csiro.au/en/careers/scholarships-student-opportunities</a></li>
+      <li>Rio Tinto careers: <a href="https://jobs.riotinto.com/" target="_blank" rel="noopener">jobs.riotinto.com</a>; BHP careers: <a href="https://www.bhp.com/careers" target="_blank" rel="noopener">bhp.com</a></li>
+      <li>TikTok, Machine Learning Engineer (LLM/VLM), Trust and Safety, Sydney, listing evidence: <a href="https://www.glassdoor.com.au/job-listing/machine-learning-engineer-llm-vlm-trust-and-safety-australia-tiktok-JV_IC2235932_KO0,60_KE61,67.htm" target="_blank" rel="noopener">glassdoor.com.au</a></li>
+      <li>IMARC Group, Australia Digital Health Market Size &amp; Outlook Report 2034: <a href="https://www.imarcgroup.com/australia-digital-health-market" target="_blank" rel="noopener">imarcgroup.com</a></li>
+      <li>Federal Register of Legislation, My Health Records Rules 2026: <a href="https://www.legislation.gov.au/F2026L00392/latest/text" target="_blank" rel="noopener">legislation.gov.au</a></li>
+      <li>Tracxn, List of RegTech Startups in Australia: <a href="https://tracxn.com/d/explore/regtech-startups-in-australia/__2iSpAb3Ka_sDXXA5SCL63T-hrAzk0839jCZlnPPsAzI" target="_blank" rel="noopener">tracxn.com</a></li>
+      <li>ScaleSuite, "State of Australian Startup Funding 2025": <a href="https://www.scalesuite.com.au/resources/state-of-australian-startup-funding" target="_blank" rel="noopener">scalesuite.com.au</a>; a lower total figure for the same year is cited via <a href="https://www.forbes.com.au/news/investing/australias-startup-funding-jumps-to-5-1-billion-in-2025-as-ai-takes-the-lead/" target="_blank" rel="noopener">Forbes Australia</a></li>
+      <li>The Paypers, WeMoney raises USD 12 million in Series A funding: <a href="https://thepaypers.com/fintech/news/wemoney-raises-usd-12-million-in-series-a-funding" target="_blank" rel="noopener">thepaypers.com</a>; additional coverage via <a href="https://perthisok.com/news/perth-based-fintech-wemoney-raises-12-million-secures-mastercard-backing/" target="_blank" rel="noopener">Perth is OK</a></li>
+      <li>Australian Signals Directorate, Careers, Benefits and Salary: <a href="https://www.asd.gov.au/careers/benefits-and-salary" target="_blank" rel="noopener">asd.gov.au</a>; I'm starting my career: <a href="https://www.asd.gov.au/careers/im-starting-my-career" target="_blank" rel="noopener">asd.gov.au</a></li>
+      <li>Digital NSW, 2026-2028 NSW Government Cyber Security Strategy: <a href="https://www.digital.nsw.gov.au/delivery/cyber-security/2026-2028-nsw-government-cyber-security-strategy" target="_blank" rel="noopener">digital.nsw.gov.au</a></li>
+      <li>NSW Government, Cyber Security Graduate, Digital Stream listing, via SEEK Grad: <a href="https://au.gradconnection.com/employers/nsw-government/jobs/nsw-government-cyber-security-graduate-digital-stream/" target="_blank" rel="noopener">au.gradconnection.com</a></li>
+      <li>BSides Sydney 2026: <a href="https://bsides.sydney/" target="_blank" rel="noopener">bsides.sydney</a></li>
+      <li>AISA, CyberConnect Canberra 2026: <a href="https://aisa.org.au/public/Public/Events/Event_Display.aspx?EventKey=CF26OC2606" target="_blank" rel="noopener">aisa.org.au</a></li>
+      <li>AISA, CyberCon Melbourne 2026: <a href="https://aisa.org.au/public/Public/Events/Event_Display.aspx?EventKey=CF26OCT14" target="_blank" rel="noopener">aisa.org.au</a></li>
+      <li>Simplify, Atlassian internship guide, on return-offer and acceptance-rate figures: <a href="https://simplify.jobs/blog/atlassian-internship-faq" target="_blank" rel="noopener">simplify.jobs</a></li>
+      <li>TopResume, "Survey: Where Employers Draw the Line on the Use of AI in Hiring": <a href="https://topresume.com/career-advice/ai-in-hiring-survey" target="_blank" rel="noopener">topresume.com</a></li>
+      <li>Prosple/SEEK Grad, CBA and Westpac 2026/2027 dedicated cyber and AI graduate streams: <a href="https://au.prosple.com/graduate-employers/commonwealth-bank/jobs-internships/graduate-program-technology-cyber-security" target="_blank" rel="noopener">au.prosple.com</a>, <a href="https://au.prosple.com/graduate-employers/westpac/jobs-internships/technology-cyber-graduate-program" target="_blank" rel="noopener">au.prosple.com</a></li>
+    </ol>
+  </footer>
+
+  <p class="disclaimer">This article was compiled by delegated AI research agents (web search and cross-checking) and reviewed for consistency before publishing. Several figures could not be independently confirmed to the same standard as the rest and are flagged rather than presented as settled fact: the national cyber security workforce shortfall is quoted inconsistently across sources from roughly 2,300 to 30,000 and no single number should be treated as authoritative; the size of any US-remote versus Australia-domestic salary premium for senior AI roles is real in direction but could not be pinned to a specific percentage; the inference that 482 visa sponsorship makes ICT roles lower-risk for wage underpayment than the economy-wide migrant worker statistic is a reasoned inference from the visa's wage-floor design, not a confirmed occupation-specific finding; the precise dollar value of the Canberra NV1/NV2 clearance salary premium, the single-source aggregated figures for average government versus private-sector cyber security pay, and the exact number of new roles WeMoney's 2025 funding round was earmarked for could not be verified against a primary source and are described qualitatively rather than quoted as exact figures. The Rio Tinto and BHP OT/ICS hiring examples reflect a documented pattern at these employers rather than confirmed live openings; check each company's careers page directly for current roles. Treat all salary, funding and workforce figures in this piece as directional guidance for planning a career, not as guaranteed numbers, since they vary by employer, location, experience level and market conditions.</p>
+
+</div>
+</body>
+</html>
