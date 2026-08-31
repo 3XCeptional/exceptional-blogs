@@ -1,0 +1,126 @@
+export const frontmatter = {
+  title: "Inside the AI Red Team: How LLMs Actually Get Attacked",
+  dek: "Traditional application security tests a fixed input grammar. Large language models accept natural language, which means the attack surface is the entire space of human expression. Here is how attackers actually break these systems, and how serious evaluation teams actually test for it.",
+  date: "2026-09-01",
+  readTime: "11 min read",
+  kicker: "AI Security · Technical Methodology",
+  image: "assets/ai-red-teaming-hero.png",
+  imageAlt: "Illustration of a layered security testing pipeline around a large language model, with automated scanners, adversarial prompts, and a human reviewer feeding into a scored evaluation report",
+  imageCaption: "Modern LLM red-teaming pipelines combine automated scanners, multi-turn adversarial campaigns, and human review rather than relying on any single method. Illustration generated for this article.",
+  excerpt: "Traditional application security tests a fixed input grammar. LLMs accept natural language, so the attack surface is the entire space of human expression. A technical walkthrough of the taxonomy, frameworks, and tooling behind real AI red-teaming.",
+  category: "ai-security",
+  categoryLabel: "AI Security",
+};
+
+A web application firewall can be tuned against a known set of malicious input patterns because HTTP requests, SQL queries, and form fields have a fixed grammar. A large language model has no such grammar. Its input is unrestricted natural language, its output is probabilistic rather than deterministic, and the same prompt can produce a compliant answer on one run and a policy-violating one on the next. That single fact reshapes what security testing has to look like for these systems.
+
+Red-teaming an LLM is not a matter of running a scanner once and filing a ticket. It is a discipline built on attack taxonomies, standardized risk frameworks, purpose-built tooling, and evaluation pipelines that blend automation with human judgment. This piece is a technical walkthrough of how that discipline actually works today.
+
+<StatGrid>
+  <Stat num="10">Categories in the OWASP Top 10 for LLM Applications, 2025 edition</Stat>
+  <Stat num="84">Adversary techniques cataloged in MITRE ATLAS v5.1.0, spanning the full AI lifecycle</Stat>
+  <Stat num="~98%">Attack success rate the Crescendo multi-turn jailbreak achieved against GPT-4 in its original evaluation</Stat>
+  <Stat num="120+">Pre-built probes in Garak, the NVIDIA-backed open-source LLM vulnerability scanner</Stat>
+</StatGrid>
+
+## Why this is a different kind of security testing
+
+Classic application security testing assumes a stable target: the same request, sent twice, produces the same response, and a vulnerability either exists in the code path or it does not. LLM security testing breaks both assumptions. Outputs are sampled from a probability distribution, so the same adversarial prompt can fail nine times and succeed on the tenth. And because the "input validation layer" is the model's own learned behavior rather than a parser with an explicit grammar, there is no clean boundary between legitimate use and attack, only a spectrum of phrasing that shifts the model's behavior by degrees.
+
+That is why LLM red-teaming has converged on a handful of purpose-built tools, a shared risk taxonomy, and a lifecycle-wide adversary framework, rather than reusing the fuzzing and static-analysis toolchain built for conventional software.
+
+## The attack taxonomy
+
+Attacks on LLMs fall into a few recurring families. Understanding each one matters because they defeat different layers of a system's defenses, and a red-teaming program that only tests one family will miss the others entirely.
+
+**Multi-turn escalation (Crescendo).** Rather than encoding a harmful request in a single prompt, a Crescendo-style attack opens with an innocuous, abstract question and incrementally steers the conversation, turn by turn, toward a forbidden objective. Each individual message looks reasonable in isolation; it is only the trajectory across the conversation that constitutes the attack. In the paper that introduced the technique, this approach achieved an attack success rate of roughly 98 percent against GPT-4 and close to 100 percent against GeminiPro, figures that illustrate how much of a blind spot single-turn defenses can have against gradual, contextual pressure.
+
+**Adversarial suffix attacks.** This family, sometimes referred to by the GCG (Greedy Coordinate Gradient) technique that popularized it, appends an optimized, often nonsensical-looking token sequence to an otherwise disallowed request. The suffix is computed to flip the model's refusal behavior, exploiting the gap between what a model was trained to refuse and what its underlying token-probability landscape actually permits.
+
+**Role-play override.** The attacker asks the model to adopt a persona, a fictional character, or a "developer mode" framing, then routes the disallowed request through that persona. The technique exploits the model's instruction-following behavior against its safety training rather than attacking the model's language understanding directly.
+
+**Encoding and obfuscation bypass.** Requests are transformed, base64-encoded, written in leetspeak, translated into a low-resource language, or otherwise disguised so that content filters trained on plain-text patterns fail to recognize the underlying request, even though the model itself can still decode and act on it.
+
+**Indirect, data-borne prompt injection.** Rather than attacking the conversation directly, the attacker plants instructions inside content the model will later ingest: a webpage it summarizes, a document it retrieves, an email it processes. The model treats that ingested content as untrusted data in principle, but in practice often cannot reliably distinguish "data to summarize" from "instructions to follow," which is what makes this class of attack effective against retrieval-augmented and agentic systems in particular.
+
+<Warn label="Prompt injection may not be a patchable bug">
+  The OWASP Top 10 for Agentic Applications 2026 reflects this shift directly. Rather than treating prompt injection as a single flaw to be fixed, the framework ranks Agent Goal Hijacking as its number-one risk: an attacker redirects an agent's objective through content the agent reads, not code it runs. The clearest real-world case is EchoLeak (CVE-2025-32711), the first documented zero-click attack on an AI agent, in which a single crafted email planted hidden instructions that Microsoft 365 Copilot later retrieved as context and acted on, exfiltrating data with no user interaction at all. That framing matters operationally: the model has no reliable, built-in mechanism to separate trusted instructions from untrusted data in the same context window, which is why teams that treat this as a one-time patch rather than a permanent attack surface tend to under-invest in ongoing testing.
+</Warn>
+
+## OWASP Top 10 for LLM Applications, 2025
+
+The OWASP GenAI Security Project maintains a Top 10 list for LLM applications, functioning as the same kind of shared reference point the original OWASP Top 10 became for web application security. The 2025 edition is:
+
+| Rank | Category | What it means in plain terms |
+|---|---|---|
+| LLM01:2025 | Prompt Injection | Crafted input causes the model to deviate from its intended instructions |
+| LLM02:2025 | Sensitive Information Disclosure | The model reveals private, proprietary, or otherwise restricted data in its output |
+| LLM03:2025 | Supply Chain | Vulnerabilities introduced through third-party models, datasets, plugins, or fine-tuning pipelines |
+| LLM04:2025 | Data and Model Poisoning | Training, fine-tuning, or retrieval data is manipulated to bias or corrupt model behavior |
+| LLM05:2025 | Improper Output Handling | Model output is passed downstream (to a shell, a database, a browser) without adequate validation |
+| LLM06:2025 | Excessive Agency | The model is granted more autonomous permissions, tools, or reach than a given task requires |
+| LLM07:2025 | System Prompt Leakage | Confidential system-level instructions are extracted or inferred by an attacker |
+| LLM08:2025 | Vector and Embedding Weaknesses | Flaws in how embeddings and vector stores are generated, stored, or retrieved, particularly in RAG pipelines |
+| LLM09:2025 | Misinformation | The model produces confident, plausible, but false output that is trusted as authoritative |
+| LLM10:2025 | Unbounded Consumption | Uncontrolled resource, cost, or denial-of-service exposure from excessive or malicious model usage |
+
+This list is useful as a checklist for what can go wrong. It says relatively little about how an adversary actually moves through a system to make one of those things go wrong, which is the gap the next framework fills.
+
+## MITRE ATLAS: how adversaries actually operate
+
+Where OWASP catalogs categories of risk, MITRE ATLAS (Adversarial Threat Landscape for Artificial Intelligence Systems) catalogs adversary behavior, modeled explicitly on the structure of MITRE ATT&CK. It is a living knowledge base built from real-world observations and documented incidents rather than a theoretical taxonomy, organized as tactics (the adversary's goal at a given stage), techniques (how that goal is achieved), and sub-techniques (specific variations).
+
+As of version 5.1.0, released in November 2025, ATLAS covers 16 tactics, 84 techniques, 56 sub-techniques, and 32 mitigations, backed by 42 real-world case studies. Critically, it spans the entire AI system lifecycle, from data collection and model training through deployment and live operation, rather than focusing narrowly on the inference-time conversation the way most jailbreak research does. The Spring 2025 update added a set of generative-AI-specific techniques including RAG Poisoning, False RAG Entry Injection, LLM Prompt Crafting, Impersonation, and AI Supply Chain Compromise, reflecting how far adversary tradecraft has moved beyond simple single-turn jailbreak prompts.
+
+In practice, the two frameworks complement each other: OWASP answers "what categories of failure should we be worried about," and ATLAS answers "what sequence of adversary actions, across which lifecycle stage, actually produces that failure."
+
+## The tooling landscape
+
+No single tool covers the full testing surface, which is why serious programs run several in combination rather than picking one and stopping.
+
+| Tool | Backing | Strength | Best used for |
+|---|---|---|---|
+| Garak | NVIDIA-backed | Library of 120+ pre-built probes drawn from academic research and documented vulnerabilities | Mapping a model's raw vulnerability surface at selection or upgrade time, before application integration |
+| PyRIT | Microsoft | Multi-turn campaign orchestration, including Crescendo-style and TAP-style escalation and context manipulation | High-stakes scenarios: agents with tool access, public-facing chatbots, anything a persistent multi-turn attacker could defeat |
+| Promptfoo | Open-source, application-focused | Tests the complete deployed system (RAG pipeline, agent architecture, API integration), not just the isolated model, generating variations specific to the target's own policies | Continuous testing in CI/CD, replaying regressions on every system-prompt or model-version change |
+| Giskard | Open-source | Python-first testing framework with 40+ vulnerability probes | A workflow closely comparable to Promptfoo's, for teams standardizing on a Python-native test harness |
+
+These tools are not competing replacements for one another so much as different layers of the same pipeline. A representative combined strategy looks like this: run Garak upstream, at model selection or upgrade time, to understand the raw vulnerability surface of a candidate model before it is wired into anything. Run PyRIT in depth against high-stakes agentic deployments, where a persistent, multi-turn attacker is the realistic threat model. Run Promptfoo continuously in CI/CD, so that every change to a system prompt, a retrieval index, or a model version is automatically re-tested against known failure modes before it ships.
+
+<Callout label="Tools chain together, they do not replace one another">
+  Garak answers "what can this raw model be tricked into doing." PyRIT answers "can a persistent, multi-turn attacker defeat this specific deployment's guardrails." Promptfoo answers "did this week's change to our system prompt reopen a hole we already closed." A program that only runs one of these has answered one of three separate questions.
+</Callout>
+
+## How real evaluation pipelines are structured
+
+Mature AI red-teaming programs are not a single audit before launch. They combine several layers running on different cadences.
+
+**Automated tooling in CI/CD.** Scanners like Garak and application-level frameworks like Promptfoo are wired into the deployment pipeline and run on every model update or configuration change, catching regressions before they reach production.
+
+**Periodic human engagements.** Automated tooling is supplemented, not replaced, by manual red-teaming conducted by human specialists. High-risk applications are typically tested on a quarterly cadence, with lower-risk applications tested semi-annually. Human red-teamers bring what automated tools still cannot: novel jailbreak development, nuanced judgment about where a genuine safety boundary sits versus a false positive, sensitivity to culturally specific failure modes, and the patience to run genuinely creative multi-turn conversations that a scripted campaign will not think to try.
+
+**Severity scoring.** Findings are typically classified into tiers, Critical, High, Medium, Low, and Info, derived from a combination of a jailbreak or compliance score (a continuous measure of how completely the target complied with the adversarial goal) and the category of the goal itself. A full compliance score against a request for building instructions for a weapon scores very differently from the same compliance score against a request for mildly discouraged but low-harm content.
+
+**LLM-as-judge, with human review as the check on it.** Using a second LLM to automatically score whether a target model's response constitutes a policy violation is what makes high-throughput automated screening feasible at all, since no human team could manually review every output of a large automated test campaign. But it is a scalability tool, not a substitute for expert judgment on safety-critical findings. One documented finding underscores why layered scoring matters: simple keyword-matching approaches, the crudest and cheapest form of automated screening, miss roughly 83 percent of high-risk behaviors. That gap is the reason the more effective pipelines layer automated filtering, AI-based semantic analysis, and human expert adjudication together rather than relying on any single method.
+
+## Why layering beats any single method
+
+No individual technique here, not Crescendo, not adversarial suffixes, not a single scanner, not a single scoring method, catches everything. Multi-turn attacks slip past single-shot filters. Application-level testing misses raw model vulnerabilities that never surface until a system prompt changes. Automated LLM-as-judge scoring misses the nuanced cases that need a human's contextual judgment, and keyword matching alone misses the overwhelming majority of real risk. The pattern across every serious program covered here, OWASP's categorical checklist, ATLAS's lifecycle-wide adversary model, and the Garak-PyRIT-Promptfoo tooling chain, is the same: no one layer is sufficient, and continuous, multi-method testing is the only approach that has held up as attack techniques keep evolving.
+
+<Disclaimer>
+This article summarizes attack techniques, frameworks, and tooling capabilities as documented in the cited sources at time of writing. The field moves quickly: attack success rates, tool feature sets, and framework version numbers should be reverified against current official documentation before being relied on for an operational security decision.
+</Disclaimer>
+
+<Sources items={[
+  { label: "OWASP GenAI Security Project, OWASP Top 10 for LLM Applications 2025: genai.owasp.org", url: "https://genai.owasp.org" },
+  { label: "Russinovich, Salem, Eldan, \"Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack\": arXiv:2404.01833", url: "https://arxiv.org/html/2404.01833v1" },
+  { label: "\"Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack\" (PDF): arXiv:2404.01833", url: "https://arxiv.org/pdf/2404.01833" },
+  { label: "MITRE ATLAS Fact Sheet, v5.1.0: atlas.mitre.org", url: "https://atlas.mitre.org/pdf-files/MITRE_ATLAS_Fact_Sheet.pdf" },
+  { label: "CrowdStrike, \"What is MITRE ATLAS?\": crowdstrike.com", url: "https://www.crowdstrike.com/en-us/cybersecurity-101/artificial-intelligence/mitre-atlas/" },
+  { label: "Promptfoo, \"Promptfoo vs Garak\": promptfoo.dev", url: "https://www.promptfoo.dev/blog/promptfoo-vs-garak/" },
+  { label: "ThreatClaw, \"LLM Red Team Tools: Garak, PyRIT, Promptfoo\": threatclaw.io", url: "https://threatclaw.io/en/blog/llm-red-team-tools-garak-pyrit-promptfoo" },
+  { label: "AI Security and Safety Guides, \"AI Model Evaluation\": aisecurityandsafety.org", url: "https://aisecurityandsafety.org/en/guides/ai-model-evaluation/" },
+  { label: "OpenAI, \"OpenAI's Approach to External Red Teaming\" (PDF): cdn.openai.com", url: "https://cdn.openai.com/papers/openais-approach-to-external-red-teaming.pdf" },
+  { label: "Comprehensive LLM prompt injection technique reference: gist.github.com/kibotu", url: "https://gist.github.com/kibotu/c06f54d6fbc4705e886a50fb2e59e6ae" },
+  { label: "OWASP Top 10 for Agentic Applications", url: "https://www.promptfoo.dev/docs/red-team/owasp-agentic-ai/" },
+]} />
