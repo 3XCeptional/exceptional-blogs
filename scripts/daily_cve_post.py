@@ -43,48 +43,68 @@ GENERIC_HERO = {
 
 ASSETS_DIR = REPO_ROOT / "public" / "assets" / "cve"
 SITE_BASE = "/exceptional-blogs/"  # must match vite.config.ts `base`
-AGY_TIMEOUT_SEC = 300
-AGY_ATTEMPTS = 2
+AGY_TIMEOUT_SEC = 420
+AGY_ATTEMPTS = 3
 
 
-def generate_images(c: dict, slug: str) -> dict:
+FALLBACK_SCENES = {
+    "hero": {"description": "A hypothetical scenario illustration: an attacker "
+             "figure reaching through an open gate into a server room.", "labels": []},
+    "diagram": {"description": "A technical flow diagram: attacker box, arrow "
+                "into the vulnerable component, arrow into what it exposes.",
+                "labels": ["Attacker", "Vulnerable Service", "Compromised System"]},
+    "impact": {"description": "A scenario illustration of the breach's real-world "
+               "consequence spreading outward from the compromised system.", "labels": []},
+}
+
+
+def generate_images(c: dict, slug: str, image_scenes: dict | None = None) -> dict:
     """Ask agy for 3 dedicated images (hero + 2 inline) for this post.
+
+    image_scenes (from the researched claude -p call, see build_prompt's
+    "image_scenes" key) grounds each image in what actually happened for
+    THIS CVE - real component/product names as short labels, a genuine
+    infographic-style diagram for the attack flow, a hypothetical scenario
+    depiction for the hero/impact - rather than a generic circuit-board
+    cliche reused every time. Falls back to FALLBACK_SCENES if missing.
 
     Never blocks a post on image failure - any image agy fails to produce
     is simply omitted, and write_article() falls back to GENERIC_HERO for
-    the hero slot if needed. Kept all three prompts abstract (no requested
-    labeled text/diagrams) - a labeled-diagram request measurably took much
-    longer and timed out more often in testing than plain abstract art.
+    the hero slot if needed.
     """
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    scenes = image_scenes if isinstance(image_scenes, dict) else {}
     specs = [
         ("hero", "hero/banner image (1200x630)",
-         f"an abstract technical illustration for a blog post about {c['cve_id']}, a "
-         f"{c['severity']} severity vulnerability (CVSS {c['cvss']}). Circuit/network "
-         "motif, dark background, a red accent marking the vulnerability point. No "
-         "text or lettering anywhere in the image.",
+         scenes.get("hero") or FALLBACK_SCENES["hero"],
          "Hero illustration of the vulnerability."),
-        ("diagram", "abstract illustration",
-         "an abstract illustration representing the attack flow for this bug: "
-         f"{c['description'][:300]}. Convey intrusion/data flow through visual "
-         "metaphor only (arrows, connected nodes, a breach point) - no readable "
-         "text, labels, or logos anywhere in the image, dark theme matching a "
-         "security blog.",
-         "Illustration of the vulnerable component interaction."),
-        ("impact", "abstract illustration",
-         f"an abstract illustration representing the real-world impact or blast radius "
-         f"of exploiting {c['cve_id']} (CVSS {c['cvss']}). Dark theme, no text.",
+        ("diagram", "technical infographic diagram",
+         scenes.get("diagram") or FALLBACK_SCENES["diagram"],
+         "Diagram of the vulnerable component interaction."),
+        ("impact", "scenario illustration",
+         scenes.get("impact") or FALLBACK_SCENES["impact"],
          "Illustration of the vulnerability's real-world impact."),
     ]
     images = {}
-    for name, kind, prompt, caption in specs:
+    for name, kind, scene, caption in specs:
         path = ASSETS_DIR / f"{slug}-{name}.png"
+        description = scene.get("description") if isinstance(scene, dict) else str(scene)
+        labels = scene.get("labels") if isinstance(scene, dict) else []
+        labels_line = (
+            f" Include these short labels legibly in the image where they fit "
+            f"naturally: {', '.join(labels)}." if labels else " No text or labels needed."
+        )
         for attempt in range(AGY_ATTEMPTS):
             try:
                 result = subprocess.run(
                     ["agyw", "-p",
                      f"Generate a {kind} and save it as a PNG to the absolute path "
-                     f"{path}. The image should show {prompt}",
+                     f"{path}. The scene: {description}{labels_line} Dark theme "
+                     "matching a security blog. Any product/platform marks shown "
+                     "should be depicted as editorial illustration (commentary on "
+                     "a real vulnerability), not as official vendor artwork - "
+                     "never fabricate a CVE score, statistic, or company name not "
+                     "listed above.",
                      "--dangerously-skip-permissions"],
                     capture_output=True, text=True, timeout=AGY_TIMEOUT_SEC,
                 )
@@ -187,6 +207,10 @@ Output ONLY a single JSON object (no markdown code fences, no commentary before 
 - "excerpt": summary under 200 characters for a card preview
 - "read_time": estimate like "6 min read", based on your body length
 - "attack_style": a short 1-4 word classification of the attack pattern, e.g. "Authentication Bypass", "Remote Code Execution", "SSRF", "Path Traversal", "BOLA / IDOR", "Privilege Escalation", "Enumeration", "Deserialization". Pick the closest fit from the actual mechanism, do not invent a category that doesn't apply.
+- "image_scenes": an object with exactly three keys "hero", "diagram", "impact" - each an object with "description" (2-4 sentences) and "labels" (an array of 0-6 short strings, each under 4 words - real component/product/service names or short attack-step labels ONLY, e.g. "Attacker", "argocd-mcp :8080", "Argo CD API", "ARGOCD_API_TOKEN", "Kubernetes Cluster" - never a fabricated stat, never a CVE score, never invented text). Ground every scene in what you actually found about THIS vulnerability, not a generic "circuit board with a red glow" that could apply to any CVE:
+  - "hero": the overall visual concept as a hypothetical scenario depicting the actual story (e.g. an attacker figure reaching past an open gate into a server room, a fake package unpacking itself). Recognizable stylized marks for real products/platforms involved (e.g. the Kubernetes wheel, a GitHub-style octocat silhouette, a generic cloud/server icon) are fine to reference in the description if genuinely relevant - describe them as commentary/editorial illustration, not as if officially endorsed by the vendor.
+  - "diagram": a real infographic-style flow diagram of the specific attack path from the Technical root cause section - labeled boxes/nodes connected by arrows showing the actual sequence (attacker -> vulnerable component -> what it reaches). This should look like a genuine technical diagram, not pure abstract art.
+  - "impact": a scenario or infographic depicting the specific real-world consequence from the Real-world impact section (e.g. a compromised cluster, a supply-chain style spread) - can include the same short labels convention, keep it visual-first not text-heavy.
 - "body": the full article body as Markdown (no top-level H1, no frontmatter), 900-1400 words, professional prose, no em dashes, no filler. Use "##" headings. Structure:
   1. What happened - plain-language summary of the bug and why it was disclosed.
   2. Affected software and versions.
@@ -300,7 +324,7 @@ def main() -> int:
     if gen is None:
         return 1
 
-    images = generate_images(chosen, slug)
+    images = generate_images(chosen, slug, gen.get("image_scenes"))
     path = write_article(chosen, gen, slug, today, images)
     image_paths = [REPO_ROOT / "public" / img["rel"] for img in images.values()]
 
