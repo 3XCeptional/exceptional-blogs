@@ -41,6 +41,73 @@ GENERIC_HERO = {
     "imageCaption": "A conceptual illustration of a security vulnerability in software.",
 }
 
+ASSETS_DIR = REPO_ROOT / "public" / "assets" / "cve"
+SITE_BASE = "/exceptional-blogs/"  # must match vite.config.ts `base`
+AGY_TIMEOUT_SEC = 300
+AGY_ATTEMPTS = 2
+
+
+def generate_images(c: dict, slug: str) -> dict:
+    """Ask agy for 3 dedicated images (hero + 2 inline) for this post.
+
+    Never blocks a post on image failure - any image agy fails to produce
+    is simply omitted, and write_article() falls back to GENERIC_HERO for
+    the hero slot if needed. Kept all three prompts abstract (no requested
+    labeled text/diagrams) - a labeled-diagram request measurably took much
+    longer and timed out more often in testing than plain abstract art.
+    """
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    specs = [
+        ("hero", "hero/banner image (1200x630)",
+         f"an abstract technical illustration for a blog post about {c['cve_id']}, a "
+         f"{c['severity']} severity vulnerability (CVSS {c['cvss']}). Circuit/network "
+         "motif, dark background, a red accent marking the vulnerability point. No "
+         "text or lettering anywhere in the image.",
+         "Hero illustration of the vulnerability."),
+        ("diagram", "abstract illustration",
+         "an abstract illustration representing the attack flow for this bug: "
+         f"{c['description'][:300]}. Convey intrusion/data flow through visual "
+         "metaphor only (arrows, connected nodes, a breach point) - no readable "
+         "text, labels, or logos anywhere in the image, dark theme matching a "
+         "security blog.",
+         "Illustration of the vulnerable component interaction."),
+        ("impact", "abstract illustration",
+         f"an abstract illustration representing the real-world impact or blast radius "
+         f"of exploiting {c['cve_id']} (CVSS {c['cvss']}). Dark theme, no text.",
+         "Illustration of the vulnerability's real-world impact."),
+    ]
+    images = {}
+    for name, kind, prompt, caption in specs:
+        path = ASSETS_DIR / f"{slug}-{name}.png"
+        for attempt in range(AGY_ATTEMPTS):
+            try:
+                result = subprocess.run(
+                    ["agyw", "-p",
+                     f"Generate a {kind} and save it as a PNG to the absolute path "
+                     f"{path}. The image should show {prompt}",
+                     "--dangerously-skip-permissions"],
+                    capture_output=True, text=True, timeout=AGY_TIMEOUT_SEC,
+                )
+                if result.returncode == 0 and path.exists() and path.stat().st_size > 1000:
+                    images[name] = {"rel": f"assets/cve/{path.name}", "caption": caption}
+                    break
+                log(f"agy image '{name}' attempt {attempt + 1} failed for {c['cve_id']}: "
+                    f"{result.stderr.strip()[:300]}")
+            except Exception as e:
+                log(f"agy image '{name}' attempt {attempt + 1} errored for {c['cve_id']}: {e}")
+    return images
+
+
+def _insert_after_heading(body: str, heading: str, markdown_block: str) -> str:
+    marker = f"## {heading}"
+    idx = body.find(marker)
+    if idx == -1:
+        return body + "\n\n" + markdown_block + "\n"
+    line_end = body.find("\n", idx)
+    if line_end == -1:
+        return body + "\n\n" + markdown_block + "\n"
+    return body[: line_end + 1] + "\n" + markdown_block + "\n" + body[line_end + 1 :]
+
 
 def log(msg: str) -> None:
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -119,6 +186,7 @@ Output ONLY a single JSON object (no markdown code fences, no commentary before 
 - "dek": 1-2 sentence subtitle explaining why this vulnerability matters, professional tone
 - "excerpt": summary under 200 characters for a card preview
 - "read_time": estimate like "6 min read", based on your body length
+- "attack_style": a short 1-4 word classification of the attack pattern, e.g. "Authentication Bypass", "Remote Code Execution", "SSRF", "Path Traversal", "BOLA / IDOR", "Privilege Escalation", "Enumeration", "Deserialization". Pick the closest fit from the actual mechanism, do not invent a category that doesn't apply.
 - "body": the full article body as Markdown (no top-level H1, no frontmatter), 900-1400 words, professional prose, no em dashes, no filler. Use "##" headings. Structure:
   1. What happened - plain-language summary of the bug and why it was disclosed.
   2. Affected software and versions.
@@ -126,7 +194,8 @@ Output ONLY a single JSON object (no markdown code fences, no commentary before 
   4. Exploitability and attack vector - what an attacker needs (network position, auth, user interaction) and what they gain.
   5. "## Reproduce it safely" - a reader-facing walkthrough for testing this **only against a system you own or an authorized lab (a local VM, a Docker container you built, or a HackTheBox/TryHackMe box that specifically hosts this CVE)**. State that framing explicitly at the top of the section. If you found a real public PoC, walk through its actual steps (setup, the request/payload/command, expected result) citing where it came from. If no public PoC or reliable reproduction path exists, say so plainly instead of fabricating one, and instead give a concrete verification method (a version check, a vulnerable-config check, a detection signature, or a relevant existing HTB/THM box that teaches the same bug class) so the reader still has something real to do.
   6. Real-world impact and remediation - patched version, config mitigation, and detection guidance.
-  At the end of the body, add a "## Sources" markdown line listing the URLs you actually used (references + anything found via search)."""
+  7. "## TL;DR" - a short, plain-language recap for readers in a hurry: 3-5 sentences or bullet points covering what the bug is, who's affected, and what to do about it. No jargon that wasn't already explained above.
+  Place "## TL;DR" as the second-to-last section and "## Sources" (a markdown list of the URLs you actually used - references + anything found via search) as the very last section."""
 
 
 def call_claude(prompt: str) -> dict:
@@ -150,20 +219,33 @@ def call_claude(prompt: str) -> dict:
         raise RuntimeError(f"claude -p returned invalid JSON: {e}") from e
 
 
-def write_article(c: dict, gen: dict, slug: str, today: str) -> Path:
+def write_article(c: dict, gen: dict, slug: str, today: str, images: dict) -> Path:
+    hero = images.get("hero")
     fm = {
         "title": gen["title"],
         "dek": gen["dek"],
         "date": today,
         "readTime": gen["read_time"],
         "kicker": "Security · CVE Analysis",
-        **GENERIC_HERO,
+        "image": hero["rel"] if hero else GENERIC_HERO["image"],
+        "imageAlt": hero["caption"] if hero else GENERIC_HERO["imageAlt"],
+        "imageCaption": hero["caption"] if hero else GENERIC_HERO["imageCaption"],
         "excerpt": gen["excerpt"],
         "category": "cve",
         "categoryLabel": "CVE Analysis",
+        "attackStyle": gen["attack_style"],
     }
     fm_lines = ",\n".join(f"  {k}: {json.dumps(v)}" for k, v in fm.items())
-    content = f"export const frontmatter = {{\n{fm_lines},\n}};\n\n{gen['body']}\n"
+
+    body = gen["body"]
+    for name, heading in (("diagram", "Technical root cause"), ("impact", "Real-world impact")):
+        img = images.get(name)
+        if not img:
+            continue
+        markdown_img = f'![{img["caption"]}]({SITE_BASE}{img["rel"]})'
+        body = _insert_after_heading(body, heading, markdown_img)
+
+    content = f"export const frontmatter = {{\n{fm_lines},\n}};\n\n{body}\n"
     path = ARTICLES_DIR / f"{slug}.mdx"
     path.write_text(content)
     return path
@@ -176,9 +258,9 @@ def build_check() -> tuple[bool, str]:
     return result.returncode == 0, (result.stdout + result.stderr)[-2000:]
 
 
-def git_publish(path: Path, cve_id: str, title: str) -> None:
-    rel = str(path.relative_to(REPO_ROOT))
-    subprocess.run(["git", "add", rel], cwd=str(REPO_ROOT), check=True)
+def git_publish(path: Path, image_paths: list[Path], cve_id: str, title: str) -> None:
+    rels = [str(p.relative_to(REPO_ROOT)) for p in [path, *image_paths]]
+    subprocess.run(["git", "add", *rels], cwd=str(REPO_ROOT), check=True)
     message = (
         f"Add daily CVE post: {cve_id} - {title}\n\n"
         f"Automated daily CVE pipeline (scripts/daily_cve_post.py).\n\n"
@@ -218,16 +300,20 @@ def main() -> int:
     if gen is None:
         return 1
 
-    path = write_article(chosen, gen, slug, today)
+    images = generate_images(chosen, slug)
+    path = write_article(chosen, gen, slug, today, images)
+    image_paths = [REPO_ROOT / "public" / img["rel"] for img in images.values()]
 
     ok, output = build_check()
     if not ok:
         log(f"build check FAILED for {chosen['cve_id']}, reverting: {output}")
         path.unlink(missing_ok=True)
+        for p in image_paths:
+            p.unlink(missing_ok=True)
         return 1
 
     try:
-        git_publish(path, chosen["cve_id"], gen["title"])
+        git_publish(path, image_paths, chosen["cve_id"], gen["title"])
     except subprocess.CalledProcessError as e:
         log(f"git publish failed for {chosen['cve_id']}: {e}")
         return 1

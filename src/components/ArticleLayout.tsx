@@ -10,6 +10,7 @@ export interface Frontmatter {
   image: string;
   imageAlt: string;
   imageCaption: string;
+  attackStyle?: string;
 }
 
 export default function ArticleLayout({
@@ -28,6 +29,7 @@ export default function ArticleLayout({
       </p>
       <header className="hero">
         <h1>{frontmatter.title}</h1>
+        {frontmatter.attackStyle && <span className="attack-tag">{frontmatter.attackStyle}</span>}
         <p className="dek">{frontmatter.dek}</p>
         <p className="meta">
           Published {frontmatter.date} &middot; Research compiled with delegated AI agents and
