@@ -251,6 +251,21 @@ figcaption {
 }
 
 /* article body typography, applied inside .article-body (the MDX-rendered region) */
+
+/* inline markdown images (![]()) - markdown wraps them in <p>, unlike the
+   hero <figure>, so they need their own sizing/centering rule */
+.article-body p:has(> img:only-child) {
+  margin: 32px 0;
+  text-align: center;
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+}
+
 .article-body h2 {
   font-family: var(--font-display);
   font-weight: 600;
