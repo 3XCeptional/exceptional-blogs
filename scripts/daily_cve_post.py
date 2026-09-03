@@ -33,7 +33,7 @@ ARTICLES_DIR = REPO_ROOT / "src" / "content" / "articles"
 NVD_API = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 LOOKBACK_DAYS = 5
 MIN_CVSS = 7.0
-CLAUDE_TIMEOUT_SEC = 240
+CLAUDE_TIMEOUT_SEC = 600
 
 GENERIC_HERO = {
     "image": "assets/dns-rce-hero.png",
@@ -98,8 +98,9 @@ def fetch_candidates() -> list[dict]:
 
 
 def build_prompt(c: dict) -> str:
-    return f"""You are writing a technical blog post explaining a newly published CVE for a public security blog read by developers and technical readers. Use ONLY the facts below, do not invent anything not supported by them.
+    return f"""You are writing a technical blog post explaining a newly published CVE for a public security blog read by developers, students, and CTF/HTB players who want to actually understand and test the bug.
 
+Known facts (starting point only, go deeper):
 CVE ID: {c['cve_id']}
 Description: {c['description']}
 CVSS score: {c['cvss']} ({c['severity']})
@@ -107,12 +108,25 @@ CVSS vector: {c['vector']}
 Published: {c['published']}
 References: {', '.join(c['references']) or 'none provided'}
 
+You have WebFetch and WebSearch. Use them before writing:
+- Fetch every URL in References above.
+- Search for the vendor advisory, the researcher's own write-up, any GitHub issue/PR/commit that fixed it, and any public PoC or exploit analysis (GHSA, Rapid7, watchTowr, ProjectDiscovery, etc).
+- Cross-check the technical mechanism across at least two independent sources when possible. If sources disagree, say so rather than picking one silently.
+- Only state technical details you actually found in a source. Never invent a root cause, an offset, a payload, or a version number you have no evidence for.
+
 Output ONLY a single JSON object (no markdown code fences, no commentary before or after) with exactly these keys:
 - "title": specific human-readable headline, not just the CVE ID
 - "dek": 1-2 sentence subtitle explaining why this vulnerability matters, professional tone
 - "excerpt": summary under 200 characters for a card preview
 - "read_time": estimate like "6 min read", based on your body length
-- "body": the full article body as Markdown (no top-level H1, no frontmatter), 600-1000 words, professional prose, no em dashes, no filler. Use "##" headings. Cover: what the vulnerability is, affected software, technical root cause in plain terms, exploitability and attack vector, real-world impact, and remediation guidance (standard best practice if specifics aren't in the facts given, clearly framed as general guidance)."""
+- "body": the full article body as Markdown (no top-level H1, no frontmatter), 900-1400 words, professional prose, no em dashes, no filler. Use "##" headings. Structure:
+  1. What happened - plain-language summary of the bug and why it was disclosed.
+  2. Affected software and versions.
+  3. Technical root cause - the actual bug class and mechanism (e.g. missing auth check, deserialization gadget, path traversal, race condition), explained precisely enough that a reader understands *why* it works, sourced from what you found.
+  4. Exploitability and attack vector - what an attacker needs (network position, auth, user interaction) and what they gain.
+  5. "## Reproduce it safely" - a reader-facing walkthrough for testing this **only against a system you own or an authorized lab (a local VM, a Docker container you built, or a HackTheBox/TryHackMe box that specifically hosts this CVE)**. State that framing explicitly at the top of the section. If you found a real public PoC, walk through its actual steps (setup, the request/payload/command, expected result) citing where it came from. If no public PoC or reliable reproduction path exists, say so plainly instead of fabricating one, and instead give a concrete verification method (a version check, a vulnerable-config check, a detection signature, or a relevant existing HTB/THM box that teaches the same bug class) so the reader still has something real to do.
+  6. Real-world impact and remediation - patched version, config mitigation, and detection guidance.
+  At the end of the body, add a "## Sources" markdown line listing the URLs you actually used (references + anything found via search)."""
 
 
 def call_claude(prompt: str) -> dict:
@@ -120,7 +134,8 @@ def call_claude(prompt: str) -> dict:
         [
             "claude", "-p", prompt,
             "--output-format", "text",
-            "--disallowedTools", "Bash,Edit,Write,Read,Grep,Glob,WebFetch,WebSearch,Agent,NotebookEdit",
+            "--allowedTools", "WebFetch,WebSearch",
+            "--disallowedTools", "Bash,Edit,Write,Read,Grep,Glob,Agent,NotebookEdit",
         ],
         cwd=str(REPO_ROOT / "scripts" / "data"),
         capture_output=True, text=True, timeout=CLAUDE_TIMEOUT_SEC,
@@ -129,7 +144,10 @@ def call_claude(prompt: str) -> dict:
         raise RuntimeError(f"claude -p failed: {result.stderr.strip()[:500]}")
     text = result.stdout.strip()
     text = re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.MULTILINE).strip()
-    return json.loads(text)
+    try:
+        return json.loads(text, strict=False)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"claude -p returned invalid JSON: {e}") from e
 
 
 def write_article(c: dict, gen: dict, slug: str, today: str) -> Path:
@@ -189,10 +207,15 @@ def main() -> int:
     today = date.today().isoformat()
     slug = f"{today}-{chosen['cve_id'].lower()}"
 
-    try:
-        gen = call_claude(build_prompt(chosen))
-    except Exception as e:
-        log(f"content generation failed for {chosen['cve_id']}: {e}")
+    prompt = build_prompt(chosen)
+    gen = None
+    for attempt in range(2):
+        try:
+            gen = call_claude(prompt)
+            break
+        except Exception as e:
+            log(f"content generation attempt {attempt + 1} failed for {chosen['cve_id']}: {e}")
+    if gen is None:
         return 1
 
     path = write_article(chosen, gen, slug, today)
