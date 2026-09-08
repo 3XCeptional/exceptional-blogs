@@ -23,6 +23,10 @@
 4. **[Data Science, AI & Cyber Job Market Dynamics](https://3xceptional.github.io/exceptional-blogs/)**
    - Empirical evaluation of technical skill demands, framework adoption, and industry trends across Australian tech hubs.
 
+### ⚙️ Systems Engineering & AI Tooling
+5. **[Inside Graphify: Codebase Knowledge Graphs & GraphRAG for AI Agents](https://3xceptional.github.io/exceptional-blogs/)**
+   - Deep dive into AST structural parsing, semantic LLM extraction, Leiden community detection, God Node discovery, and multi-agent context minimization.
+
 ---
 
 ## 🛠️ Local Development
