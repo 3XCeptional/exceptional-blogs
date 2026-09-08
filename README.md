@@ -11,16 +11,22 @@
 
 ## 📑 Published Reports & Articles
 
-### 🛡️ AI & Cybersecurity Research
+### 🛡️ AI & LLM Security
 1. **[Prompt Injection & LLM Security Landscape](https://3xceptional.github.io/exceptional-blogs/)**
    - Dissection of indirect prompt injections, jailbreaks, OWASP LLM Top 10 vulnerabilities, and runtime defense mitigations.
-2. **[Windows DNS Wormable RCE (Patch Tuesday Analysis)](https://3xceptional.github.io/exceptional-blogs/)**
+2. **[Inside the AI Red Team: How LLMs Actually Get Attacked](https://3xceptional.github.io/exceptional-blogs/)**
+   - Deep dive into multi-turn escalation, GCG suffixes, agent goal hijacking, and systematic red-teaming pipelines.
+
+### 🔍 CVE Analysis
+3. **[Windows DNS Wormable RCE (Patch Tuesday Analysis)](https://3xceptional.github.io/exceptional-blogs/)**
    - Deep dive into critical zero-click remote code execution vectors, protocol parsing flaws, and memory mitigations.
+4. **[Daily High-Severity CVE Dissections](https://3xceptional.github.io/exceptional-blogs/)**
+   - Daily automated research deep dives covering critical CVEs (argocd-mcp token leakage, Tenda buffer overflows & Telnet backdoors, WordPress PHP webshells, TOTOLINK CGI stack overflows).
 
 ### 📊 Tech Market & Data Intelligence
-3. **[Australian Tech Internship & Early Career Market Data](https://3xceptional.github.io/exceptional-blogs/)**
+5. **[Australian Tech Internship & Early Career Market Data](https://3xceptional.github.io/exceptional-blogs/)**
    - Comprehensive quantitative analysis of hiring volumes, Subclass 500 visa acceptance rates, compensation benchmarks, and hiring timelines across 150+ companies in Sydney & Melbourne.
-4. **[Data Science, AI & Cyber Job Market Dynamics](https://3xceptional.github.io/exceptional-blogs/)**
+6. **[Data Science, AI & Cyber Job Market Dynamics](https://3xceptional.github.io/exceptional-blogs/)**
    - Empirical evaluation of technical skill demands, framework adoption, and industry trends across Australian tech hubs.
 
 ---

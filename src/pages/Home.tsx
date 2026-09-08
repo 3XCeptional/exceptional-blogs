@@ -5,6 +5,7 @@ import { ArticleCard } from "../components/ArticleCard";
 
 const CATEGORIES: { value: string; label: string }[] = [
   { value: "all", label: "All" },
+  { value: "cve", label: "CVE Analysis" },
   { value: "ai-security", label: "AI & LLM Security" },
   { value: "career", label: "Career & Job Market" },
   { value: "tech", label: "Tech Deep Dives" },
